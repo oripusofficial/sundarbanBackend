@@ -6,7 +6,15 @@ const webRoutes = require('./web/routes')
 
 const app = express()
 
-app.use(cors())
+const corsOptions = {
+  allowedHeaders: ['Authorization', 'Content-Type'],
+  credentials: false,
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  origin: '*',
+}
+
+app.use(cors(corsOptions))
+app.options(/.*/, cors(corsOptions))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 

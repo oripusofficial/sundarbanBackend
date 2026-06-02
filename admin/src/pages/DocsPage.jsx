@@ -6,8 +6,9 @@ import CodeBlock from '../components/docs/CodeBlock'
 import DocTable from '../components/docs/DocTable'
 import PageHeader from '../components/PageHeader'
 import StatCard from '../components/StatCard'
+import { WEB_API_BASE_URL } from '../config/api'
 
-const baseUrl = 'http://localhost:5000/api/web'
+const baseUrl = WEB_API_BASE_URL
 
 const responseExample = `{
   "message": "Gallery images fetched",
