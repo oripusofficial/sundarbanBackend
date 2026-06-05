@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage'
 import DocsPage from './pages/DocsPage'
 import GalleryPage from './pages/GalleryPage'
 import LoginPage from './pages/LoginPage'
+import PackagesPage from './pages/PackagesPage'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route element={<AdminLayout />} path="/">
               <Route index element={<DashboardPage />} />
               <Route element={<GalleryPage />} path="gallery" />
+              <Route element={<PackagesPage />} path="packages" />
               <Route element={<DocsPage />} path="docs" />
               <Route element={<Navigate replace to="/" />} path="*" />
             </Route>

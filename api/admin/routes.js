@@ -2,6 +2,7 @@ const express = require('express')
 
 const authController = require('../controllers/authController')
 const galleryController = require('../controllers/galleryController')
+const packageController = require('../controllers/packageController')
 const authenticate = require('../middleware/auth')
 const upload = require('../middleware/upload')
 
@@ -29,5 +30,11 @@ router.get('/gallery/:id', galleryController.getGalleryImage)
 router.post('/gallery', upload.single('image'), galleryController.createGalleryImage)
 router.patch('/gallery/:id', galleryController.updateGalleryImage)
 router.delete('/gallery/:id', galleryController.deleteGalleryImage)
+
+router.get('/packages', packageController.listPackages)
+router.get('/packages/:id', packageController.getPackage)
+router.post('/packages', upload.single('image'), packageController.createPackage)
+router.patch('/packages/:id', upload.single('image'), packageController.updatePackage)
+router.delete('/packages/:id', packageController.deletePackage)
 
 module.exports = router

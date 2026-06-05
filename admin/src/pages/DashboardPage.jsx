@@ -251,8 +251,8 @@ function DashboardPage() {
           </div>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {[
-              ['Web API', 'http://localhost:5000/api/web', 'Ready'],
-              ['Admin API', 'http://localhost:5000/api/admin', 'Ready'],
+              ['Web API', 'http://localhost:5500/api/web', 'Ready'],
+              ['Admin API', 'http://localhost:5500/api/admin', 'Ready'],
               ['ImageKit', 'Upload storage', 'Connected'],
               ['MongoDB', 'Gallery database', 'Connected'],
             ].map(([name, detail, status]) => (

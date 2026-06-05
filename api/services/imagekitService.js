@@ -10,11 +10,15 @@ function getAuthHeader() {
   return `Basic ${token}`
 }
 
-function getFolder() {
+function getFolder(folder) {
+  if (folder) {
+    return folder
+  }
+
   return process.env.IMAGEKIT_FOLDER || '/sundarban/gallery'
 }
 
-async function uploadImage(file, fileName) {
+async function uploadImage(file, fileName, folder) {
   if (!process.env.IMAGEKIT_URL_ENDPOINT) {
     throw new Error('IMAGEKIT_URL_ENDPOINT is missing')
   }
@@ -22,7 +26,7 @@ async function uploadImage(file, fileName) {
   const formData = new FormData()
   formData.append('file', new Blob([file.buffer], { type: file.mimetype }), file.originalname)
   formData.append('fileName', fileName)
-  formData.append('folder', getFolder())
+  formData.append('folder', getFolder(folder))
   formData.append('useUniqueFileName', 'true')
 
   const response = await fetch(IMAGEKIT_UPLOAD_URL, {

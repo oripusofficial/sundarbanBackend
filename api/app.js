@@ -41,6 +41,11 @@ app.use((err, req, res, next) => {
     statusCode = 422
   }
 
+  if (err.code === 11000) {
+    statusCode = 422
+    err.message = 'A record with this unique value already exists'
+  }
+
   if (err.name === 'CastError' || err.code === 'LIMIT_FILE_SIZE') {
     statusCode = 400
   }

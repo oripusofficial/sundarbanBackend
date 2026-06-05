@@ -1,5 +1,5 @@
 const rawApiBaseUrl =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/admin'
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5500/api/admin'
 
 const trimmedApiBaseUrl = rawApiBaseUrl.replace(/\/$/, '')
 

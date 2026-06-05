@@ -9,21 +9,37 @@ const endpointOptions = [
     label: 'List gallery images',
     method: 'GET',
     path: '/gallery',
-    value: 'list',
+    value: 'galleryList',
   },
   {
     description: 'Fetch one published image by ID.',
     label: 'Get gallery image',
     method: 'GET',
     path: '/gallery/:id',
-    value: 'detail',
+    value: 'galleryDetail',
+  },
+  {
+    description: 'Fetch all published tour packages.',
+    label: 'List tour packages',
+    method: 'GET',
+    path: '/packages',
+    value: 'packageList',
+  },
+  {
+    description: 'Fetch one published tour package by slug.',
+    label: 'Get tour package',
+    method: 'GET',
+    path: '/packages/:slug',
+    value: 'packageDetail',
   },
 ]
 
 function ApiPlayground({ baseUrl }) {
-  const [endpoint, setEndpoint] = useState('list')
+  const [endpoint, setEndpoint] = useState('galleryList')
   const [category, setCategory] = useState('')
   const [imageId, setImageId] = useState('')
+  const [packageSlug, setPackageSlug] = useState('')
+  const [featured, setFeatured] = useState('all')
   const [response, setResponse] = useState(null)
   const [status, setStatus] = useState(null)
   const [duration, setDuration] = useState(null)
@@ -34,8 +50,12 @@ function ApiPlayground({ baseUrl }) {
   const selectedEndpoint = endpointOptions.find((option) => option.value === endpoint)
 
   const requestUrl = useMemo(() => {
-    if (endpoint === 'detail') {
+    if (endpoint === 'galleryDetail') {
       return `${baseUrl}/gallery/${imageId.trim() || ':id'}`
+    }
+
+    if (endpoint === 'packageDetail') {
+      return `${baseUrl}/packages/${packageSlug.trim() || ':slug'}`
     }
 
     const params = new URLSearchParams()
@@ -44,13 +64,26 @@ function ApiPlayground({ baseUrl }) {
       params.set('category', category.trim())
     }
 
+    if (endpoint === 'packageList' && featured !== 'all') {
+      params.set('featured', featured)
+    }
+
     const query = params.toString()
-    return `${baseUrl}/gallery${query ? `?${query}` : ''}`
-  }, [baseUrl, category, endpoint, imageId])
+    const path = endpoint === 'packageList' ? '/packages' : '/gallery'
+    return `${baseUrl}${path}${query ? `?${query}` : ''}`
+  }, [baseUrl, category, endpoint, featured, imageId, packageSlug])
 
   async function runRequest() {
-    if (endpoint === 'detail' && !imageId.trim()) {
+    if (endpoint === 'galleryDetail' && !imageId.trim()) {
       setError('Enter an image ID before running this request.')
+      setResponse(null)
+      setStatus(null)
+      setDuration(null)
+      return
+    }
+
+    if (endpoint === 'packageDetail' && !packageSlug.trim()) {
+      setError('Enter a package slug before running this request.')
       setResponse(null)
       setStatus(null)
       setDuration(null)
@@ -65,7 +98,11 @@ function ApiPlayground({ baseUrl }) {
 
     try {
       const fetchUrl =
-        endpoint === 'detail' ? `${baseUrl}/gallery/${imageId.trim()}` : requestUrl
+        endpoint === 'galleryDetail'
+          ? `${baseUrl}/gallery/${imageId.trim()}`
+          : endpoint === 'packageDetail'
+            ? `${baseUrl}/packages/${packageSlug.trim()}`
+            : requestUrl
       const result = await fetch(fetchUrl)
       const data = await result.json()
 
@@ -132,7 +169,7 @@ function ApiPlayground({ baseUrl }) {
             <p className="mt-2 text-xs text-slate-500">{selectedEndpoint.description}</p>
           </label>
 
-          {endpoint === 'list' ? (
+          {endpoint === 'galleryList' || endpoint === 'packageList' ? (
             <label className="block">
               <span className="text-sm font-medium text-slate-700">
                 Category Filter
@@ -145,7 +182,24 @@ function ApiPlayground({ baseUrl }) {
                 value={category}
               />
             </label>
-          ) : (
+          ) : null}
+
+          {endpoint === 'packageList' && (
+            <label className="block">
+              <span className="text-sm font-medium text-slate-700">Featured</span>
+              <select
+                className="mt-2 h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
+                onChange={(event) => setFeatured(event.target.value)}
+                value={featured}
+              >
+                <option value="all">All packages</option>
+                <option value="true">Featured only</option>
+                <option value="false">Not featured</option>
+              </select>
+            </label>
+          )}
+
+          {endpoint === 'galleryDetail' && (
             <label className="block">
               <span className="text-sm font-medium text-slate-700">Image ID</span>
               <input
@@ -154,6 +208,19 @@ function ApiPlayground({ baseUrl }) {
                 placeholder="665f4d0a4f2a1c6c5f6c9a20"
                 type="text"
                 value={imageId}
+              />
+            </label>
+          )}
+
+          {endpoint === 'packageDetail' && (
+            <label className="block">
+              <span className="text-sm font-medium text-slate-700">Package Slug</span>
+              <input
+                className="mt-2 h-10 w-full rounded-md border border-slate-200 px-3 font-mono text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
+                onChange={(event) => setPackageSlug(event.target.value)}
+                placeholder="1-day-sundarban-tour"
+                type="text"
+                value={packageSlug}
               />
             </label>
           )}
