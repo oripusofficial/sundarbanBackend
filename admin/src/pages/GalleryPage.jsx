@@ -195,6 +195,28 @@ function GalleryPage() {
     }))
   }
 
+  function handleEdit(image) {
+    setMessage('')
+    setError('')
+    setForm({
+      _id: image._id,
+      title: image.title,
+      altText: image.altText || image.title,
+      description: image.description || '',
+      category: image.category || 'general',
+      sortOrder: image.sortOrder ?? 0,
+      isActive: image.isActive ?? true,
+      image: null,
+      imagePreviewUrl: image.thumbnailUrl || image.url,
+    })
+  }
+
+  function handleCancelEdit() {
+    setForm(emptyForm)
+    setMessage('')
+    setError('')
+  }
+
   async function handleSubmit(event) {
     event.preventDefault()
     setIsSubmitting(true)
@@ -202,33 +224,63 @@ function GalleryPage() {
     setError('')
 
     try {
-      if (!form.image) {
-        throw new Error('Please select an image')
+      if (form._id) {
+        // Edit mode
+        const response = await authFetch(`${API_BASE_URL}/gallery/${form._id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: form.title,
+            altText: form.altText,
+            description: form.description,
+            category: form.category,
+            sortOrder: form.sortOrder,
+            isActive: form.isActive,
+          }),
+        })
+        const result = await response.json()
+
+        if (!response.ok) {
+          throw new Error(result.message || 'Unable to update image details')
+        }
+
+        setGalleryImages((images) =>
+          images.map((item) => (item._id === form._id ? result.data : item)),
+        )
+        setForm(emptyForm)
+        setMessage('Image details updated successfully')
+      } else {
+        // Upload mode
+        if (!form.image) {
+          throw new Error('Please select an image')
+        }
+
+        const body = new FormData()
+        body.append('image', form.image)
+        body.append('title', form.title)
+        body.append('altText', form.altText)
+        body.append('description', form.description)
+        body.append('category', form.category)
+        body.append('sortOrder', form.sortOrder)
+        body.append('isActive', form.isActive)
+
+        const response = await authFetch(`${API_BASE_URL}/gallery`, {
+          method: 'POST',
+          body,
+        })
+        const result = await response.json()
+
+        if (!response.ok) {
+          throw new Error(result.message || 'Unable to upload image')
+        }
+
+        setForm(emptyForm)
+        event.target.reset()
+        setMessage('Image uploaded successfully')
+        await fetchGallery({ showLoading: false })
       }
-
-      const body = new FormData()
-      body.append('image', form.image)
-      body.append('title', form.title)
-      body.append('altText', form.altText)
-      body.append('description', form.description)
-      body.append('category', form.category)
-      body.append('sortOrder', form.sortOrder)
-      body.append('isActive', form.isActive)
-
-      const response = await authFetch(`${API_BASE_URL}/gallery`, {
-        method: 'POST',
-        body,
-      })
-      const result = await response.json()
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Unable to upload image')
-      }
-
-      setForm(emptyForm)
-      event.target.reset()
-      setMessage('Image uploaded successfully')
-      await fetchGallery({ showLoading: false })
     } catch (err) {
       setError(err.message)
     } finally {
@@ -259,6 +311,13 @@ function GalleryPage() {
       setGalleryImages((images) =>
         images.map((item) => (item._id === image._id ? result.data : item)),
       )
+      // If we are currently editing the image we toggled, sync the active state in the form
+      setForm((currentForm) => {
+        if (currentForm._id === image._id) {
+          return { ...currentForm, isActive: !image.isActive }
+        }
+        return currentForm
+      })
     } catch (err) {
       setError(err.message)
     }
@@ -285,6 +344,10 @@ function GalleryPage() {
       }
 
       setGalleryImages((images) => images.filter((item) => item._id !== image._id))
+      // If we were editing the deleted image, reset the form
+      if (form._id === image._id) {
+        setForm(emptyForm)
+      }
       setMessage('Image deleted successfully')
     } catch (err) {
       setError(err.message)
@@ -322,6 +385,7 @@ function GalleryPage() {
             form={form}
             isSubmitting={isSubmitting}
             onChange={updateField}
+            onCancel={handleCancelEdit}
             onSubmit={handleSubmit}
           />
 
@@ -343,6 +407,7 @@ function GalleryPage() {
               images={filteredImages}
               isLoading={isLoading}
               onDelete={deleteImage}
+              onEdit={handleEdit}
               onToggleActive={toggleActive}
             />
           </div>

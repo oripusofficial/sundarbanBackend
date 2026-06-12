@@ -1,6 +1,6 @@
-import { Eye, EyeOff, Trash2 } from 'lucide-react'
+import { Eye, EyeOff, Trash2, Pencil } from 'lucide-react'
 
-function GalleryImageCard({ image, onDelete, onToggleActive }) {
+function GalleryImageCard({ image, onDelete, onEdit, onToggleActive }) {
   return (
     <article className="group overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
       <div className="relative aspect-[4/3] bg-slate-100">
@@ -38,7 +38,15 @@ function GalleryImageCard({ image, onDelete, onToggleActive }) {
 
         <div className="flex gap-2">
           <button
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            onClick={() => onEdit(image)}
+            type="button"
+          >
+            <Pencil aria-hidden="true" className="h-4 w-4" />
+            Edit
+          </button>
+          <button
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
             onClick={() => onToggleActive(image)}
             type="button"
           >

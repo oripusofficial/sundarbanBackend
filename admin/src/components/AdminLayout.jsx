@@ -10,6 +10,7 @@ import {
   Map,
   Menu,
   Package,
+  Receipt,
   Search,
   Settings,
   X,
@@ -25,6 +26,7 @@ const navItems = [
   { icon: BookOpen, label: 'Docs', path: '/docs' },
   { icon: CalendarCheck, label: 'Bookings', path: '/bookings' },
   { icon: Package, label: 'Packages', path: '/packages' },
+  { icon: Receipt, label: 'Invoices', path: '/invoices' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ]
 

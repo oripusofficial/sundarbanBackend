@@ -6,6 +6,7 @@ import AuthProvider from './context/AuthProvider'
 import DashboardPage from './pages/DashboardPage'
 import DocsPage from './pages/DocsPage'
 import GalleryPage from './pages/GalleryPage'
+import InvoicePage from './pages/InvoicePage'
 import LoginPage from './pages/LoginPage'
 import PackagesPage from './pages/PackagesPage'
 
@@ -21,6 +22,7 @@ function App() {
               <Route element={<GalleryPage />} path="gallery" />
               <Route element={<PackagesPage />} path="packages" />
               <Route element={<DocsPage />} path="docs" />
+              <Route element={<InvoicePage />} path="invoices" />
               <Route element={<Navigate replace to="/" />} path="*" />
             </Route>
           </Route>

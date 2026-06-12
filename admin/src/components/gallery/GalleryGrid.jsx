@@ -1,6 +1,6 @@
 import GalleryImageCard from './GalleryImageCard'
 
-function GalleryGrid({ images, isLoading, onDelete, onToggleActive }) {
+function GalleryGrid({ images, isLoading, onDelete, onEdit, onToggleActive }) {
   return (
     <section>
       {isLoading ? (
@@ -33,6 +33,7 @@ function GalleryGrid({ images, isLoading, onDelete, onToggleActive }) {
               image={image}
               key={image._id}
               onDelete={onDelete}
+              onEdit={onEdit}
               onToggleActive={onToggleActive}
             />
           ))}
